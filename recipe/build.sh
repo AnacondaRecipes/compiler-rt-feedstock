@@ -2,10 +2,16 @@ set -x
 
 if [[ "$target_platform" == osx-* ]]; then
     ls -al ${CONDA_BUILD_SYSROOT}
-    CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    if [[ "$target_platform" == osx-arm64 ]]; then
+      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    else
+      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=x86_64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    fi
     CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_macosx_CACHED_SYSROOT=${CONDA_BUILD_SYSROOT} -DDARWIN_macosx_OVERRIDE_SDK_VERSION=${MACOSX_SDK_VERSION}"
     unset CFLAGS
     unset CXXFLAGS
+    export CXXFLAGS="-DTARGET_OS_OSX=1 -DTARGET_OS_IOS=0 -DTARGET_OS_WATCH=0 -DTARGET_OS_TV=0"
+    export CFLAGS="-DTARGET_OS_OSX=1 -DTARGET_OS_IOS=0 -DTARGET_OS_WATCH=0 -DTARGET_OS_TV=0"
     ln -sf $(which $LIPO) $BUILD_PREFIX/bin/lipo
     ln -sf $(which $LD) $BUILD_PREFIX/bin/ld
     # Use the system libc++ which has dual arch
@@ -24,6 +30,12 @@ if [[ "$target_platform" == linux* ]]; then
     export CFLAGS="$CFLAGS -D__STDC_FORMAT_MACROS=1"
     export CPPFLAGS="$CPPFLAGS -D__STDC_FORMAT_MACROS=1"
     export CXXFLAGS="$CXXFLAGS -D__STDC_FORMAT_MACROS=1"
+fi
+
+if [[ ${target_platform} =~ osx-.* ]]; then
+    CMAKE_ARGS+=(-DCMAKE_C_FLAGS=-mlinker-version=305)
+    CMAKE_ARGS+=(-DCMAKE_CXX_FLAGS=-mlinker-version=305)
+    LDFLAGS="${LDFLAGS} -mlinker-version=305"
 fi
 
 # Prep build
