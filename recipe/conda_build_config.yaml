@@ -19,7 +19,7 @@ vc:
 # channel_sources:
 #  - conda-forge/label/llvm_rc,conda-forge,defaults  # [not (osx and arm64)]
 #  - https://conda-web.anaconda.org/conda-forge  # [osx and arm64]
-c_compiler_version:     # [osx]
-  - "10.0.0"            # [osx]
-cxx_compiler_version:   # [osx]
-  - "10.0.0"            # [osx]
+c_compiler_version:     # [osx and x86_64]
+  - "10.0.0"            # [osx and x86_64]
+cxx_compiler_version:   # [osx and x86_64]
+  - "10.0.0"            # [osx and x86_64]
