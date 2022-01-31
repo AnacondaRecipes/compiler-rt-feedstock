@@ -24,7 +24,8 @@ requirements:
     - {{ compiler('cxx') }}
     - python *
     - make  # [unix]
-    - llvmdev {{ version }}  # [build_platform != target_platform]
+    - patch     # [not win]
+    - m2-patch  # [win]
   host:
     - clangdev {{ version }}
     - llvmdev {{ version }}
