@@ -23,7 +23,9 @@ requirements:
     - cmake >=3.4.3
     - {{ compiler('cxx') }}
     - python *
-    - make  # [unix]
+    - make      # [unix]
+    - patch     # [unix]
+    - m2-patch  # [win]
   host:
     - clangdev {{ version }}
     - llvmdev {{ version }}
