@@ -81,11 +81,13 @@ outputs:
     #    - test -f $PREFIX/lib/clang/{{ prod_ver }}/include/sanitizer/asan_interface.h  # [unix]
 
 about:
-  home: http://llvm.org/
+  home: https://llvm.org/
   license: Apache-2.0 WITH LLVM-exception
   license_file: compiler-rt/LICENSE.TXT
+  license_family: Apache
   summary: compiler-rt runtime libraries
   dev_url: https://github.com/llvm/llvm-project
+  doc_url: https://llvm.org/docs/
   description: |
     builtins - low-level target-specific hooks required by code generation and other
       runtime components
