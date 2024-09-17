@@ -3,7 +3,11 @@ set -ex
 
 if [[ "$target_platform" == osx-* ]]; then
     ls -al ${CONDA_BUILD_SYSROOT}
-    CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=x86_64;arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    if [[ "$target_platform" == osx-arm64 ]]; then
+      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    else
+      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=x86_64 -DCOMPILER_RT_ENABLE_IOS=Off"
+    fi
     CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_macosx_CACHED_SYSROOT=${CONDA_BUILD_SYSROOT} -DDARWIN_macosx_OVERRIDE_SDK_VERSION=${MACOSX_SDK_VERSION}"
     unset CFLAGS
     unset CXXFLAGS

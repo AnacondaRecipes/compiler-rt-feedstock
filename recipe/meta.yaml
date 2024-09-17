@@ -14,6 +14,7 @@ source:
 
 build:
   number: 1
+  skip: True  # [linux and s390x]
 
 requirements:
   build:
@@ -26,8 +27,8 @@ requirements:
     - clangdev {{ version }}
     - llvmdev {{ version }}
     - libcxx   # [osx]
-    - zlib
-    - libxml2
+    - zlib {{ zlib }}
+    - libxml2 {{ libxml2 }}
 
 outputs:
   - name: compiler-rt_{{ target_platform }}
@@ -82,11 +83,13 @@ outputs:
         - if not exist %LIBRARY_LIB%\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1  # [win]
 
 about:
-  home: http://llvm.org/
+  home: https://llvm.org/
   license: Apache-2.0 WITH LLVM-exception
   license_file: compiler-rt/LICENSE.TXT
+  license_family: Apache
   summary: compiler-rt runtime libraries
   dev_url: https://github.com/llvm/llvm-project
+  doc_url: https://llvm.org/docs/
   description: |
     builtins - low-level target-specific hooks required by code generation and other
       runtime components
