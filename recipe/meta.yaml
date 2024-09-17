@@ -1,5 +1,5 @@
-{% set version = "14.0.6" %}
-{% set prod_ver = '.'.join(version.split('.')[:3]) %}
+{% set version = "17.0.6" %}
+{% set major_ver = version.split('.')[0] %}
 
 package:
   name: compiler-rt-packages
@@ -7,38 +7,34 @@ package:
 
 source:
   url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-  sha256: 8b3cfd7bc695bd6cea0f37f53f0981f34f87496e79e2529874fd03a2f9dd3a8a
+  sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
   patches:
     - patches/0001-no-code-sign.patch
     - patches/0002-compiler-rt-Make-7.0.0-compatible-with-10.9-SDK.patch
-    - patches/0003-set-cmake-paths.patch
-    - patches/0004-guard-use-of-FP_XSTATE_MAGIC1-based-on-glibc-version.patch
 
 build:
-  number: 0
-  skip: True  # [linux and s390x]
+  number: 1
 
 requirements:
   build:
     - cmake >=3.4.3
     - {{ compiler('cxx') }}
     - python *
-    - make      # [unix]
-    - patch     # [unix]
-    - m2-patch  # [win]
+    - ninja
+    - llvmdev {{ version }}  # [build_platform != target_platform]
   host:
     - clangdev {{ version }}
     - llvmdev {{ version }}
     - libcxx   # [osx]
+    - zlib
+    - libxml2
 
 outputs:
   - name: compiler-rt_{{ target_platform }}
     build:
-      ignore_run_exports:
-        - vc
-        - libcxx
-        - libgcc-ng
-        - libstdcxx-ng
+      noarch: generic
+      ignore_run_exports_from:
+        - {{ compiler('cxx') }}
       detect_binary_files_with_prefix: false  # [win]
     requirements:
       build:
@@ -50,11 +46,14 @@ outputs:
       run_constrained:
         - compiler-rt {{ version }}
     files:
-      - lib/clang/{{ prod_ver }}/lib
+      - lib/clang/{{ major_ver }}/lib   # [unix]
+      # avoid "Library\" for noarch output
+      - lib\clang\{{ major_ver }}\lib   # [win]
     test:
       commands:
         - echo {{ MACOSX_DEPLOYMENT_TARGET|default("10.9") }}
-        - test -f $PREFIX/lib/clang/{{ prod_ver }}/lib/darwin/libclang_rt.osx.a  # [osx]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/darwin/libclang_rt.osx.a                            # [osx]
+        - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1   # [win]
 
   - name: compiler-rt
     requirements:
@@ -66,28 +65,28 @@ outputs:
         - clangxx {{ version }}
         - compiler-rt_{{ target_platform }} {{ version }}
     files:
-      - lib/clang/{{ prod_ver }}/share             # [unix]
-      - lib/clang/{{ prod_ver }}/include           # [unix]
-      - Library/lib/clang/{{ version }}/share     # [win]
-      - Library/lib/clang/{{ version }}/include   # [win]
-      - Library/lib/clang/{{ version }}/lib       # [win]
-    #test:
-    #  files:
-    #    - test.c.in
-    #  commands:
-    #  {% set NEW_TARGET="10." ~ (((MACOSX_DEPLOYMENT_TARGET|default("10.13")).split(".")[1])|int + 1) %}
-    #    - sed "s/@MACOSX_DEPLOYMENT_TARGET@/{{ NEW_TARGET }}/g" test.c.in > test.c
-    #    - clang -mmacosx-version-min={{ MACOSX_DEPLOYMENT_TARGET }} test.c  # [osx]
-    #    - test -f $PREFIX/lib/clang/{{ prod_ver }}/include/sanitizer/asan_interface.h  # [unix]
+      - lib/clang/{{ major_ver }}/share             # [unix]
+      - lib/clang/{{ major_ver }}/include           # [unix]
+      # standard windows layout for arch-specific output
+      - Library\lib\clang\{{ major_ver }}\share     # [win]
+      - Library\lib\clang\{{ major_ver }}\include   # [win]
+      - Library\lib\clang\{{ major_ver }}\lib       # [win]
+    test:
+      # files:
+      #   - test.c.in
+      commands:
+        # {% set NEW_TARGET="10." ~ (((MACOSX_DEPLOYMENT_TARGET|default("10.13")).split(".")[1])|int + 1) %}
+        # - sed "s/@MACOSX_DEPLOYMENT_TARGET@/{{ NEW_TARGET }}/g" test.c.in > test.c
+        # - clang -mmacosx-version-min={{ MACOSX_DEPLOYMENT_TARGET }} test.c  # [osx]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/include/sanitizer/asan_interface.h                      # [unix]
+        - if not exist %LIBRARY_LIB%\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1  # [win]
 
 about:
-  home: https://llvm.org/
+  home: http://llvm.org/
   license: Apache-2.0 WITH LLVM-exception
   license_file: compiler-rt/LICENSE.TXT
-  license_family: Apache
   summary: compiler-rt runtime libraries
   dev_url: https://github.com/llvm/llvm-project
-  doc_url: https://llvm.org/docs/
   description: |
     builtins - low-level target-specific hooks required by code generation and other
       runtime components

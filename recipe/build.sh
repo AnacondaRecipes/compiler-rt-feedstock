@@ -3,11 +3,7 @@ set -ex
 
 if [[ "$target_platform" == osx-* ]]; then
     ls -al ${CONDA_BUILD_SYSROOT}
-    if [[ "$target_platform" == osx-arm64 ]]; then
-      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
-    else
-      CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=x86_64 -DCOMPILER_RT_ENABLE_IOS=Off"
-    fi
+    CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_osx_ARCHS=x86_64;arm64 -DCOMPILER_RT_ENABLE_IOS=Off"
     CMAKE_ARGS="$CMAKE_ARGS -DDARWIN_macosx_CACHED_SYSROOT=${CONDA_BUILD_SYSROOT} -DDARWIN_macosx_OVERRIDE_SDK_VERSION=${MACOSX_SDK_VERSION}"
     unset CFLAGS
     unset CXXFLAGS
@@ -38,7 +34,23 @@ if [[ "${PKG_VERSION}" == *rc* ]]; then
   export PKG_VERSION=${PKG_VERSION::${#PKG_VERSION}-4}
 fi
 
-INSTALL_PREFIX=${PREFIX}/lib/clang/${PKG_VERSION}
+MAJOR_VER=$(echo ${PKG_VERSION} | cut -d "." -f1)
+
+INSTALL_PREFIX=${PREFIX}/lib/clang/${MAJOR_VER}
+
+# make sure we use our pre-built libcxx, see
+# https://github.com/llvm/llvm-project/blame/llvmorg-14.0.0/compiler-rt/CMakeLists.txt#L178-L181
+export CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS -stdlib=libcxx"
+# the following option is confusingly named; it means not rebuild libcxx, see
+# https://github.com/llvm/llvm-project/blame/llvmorg-14.0.0/compiler-rt/CMakeLists.txt#L607-L608
+CMAKE_ARGS="$CMAKE_ARGS -DCOMPILER_RT_USE_LIBCXX=OFF"
+
+# point compiler-rt to correct C++ stdlib
+if [[ "$target_platform" == osx-* ]]; then
+    CMAKE_ARGS="$CMAKE_ARGS -DCOMPILER_RT_HAS_LIBCXX=1"
+else
+    CMAKE_ARGS="$CMAKE_ARGS -DCOMPILER_RT_HAS_LIBSTDCXX=1"
+fi
 
 # make sure we use our pre-built libcxx, see
 # https://github.com/llvm/llvm-project/blame/llvmorg-14.0.0/compiler-rt/CMakeLists.txt#L178-L181
@@ -55,7 +67,7 @@ else
 fi
 
 cmake \
-    -G "Unix Makefiles" \
+    -G "Ninja" \
     -DCMAKE_BUILD_TYPE="Release" \
     -DLLVM_CONFIG_PATH="$PREFIX/bin/llvm-config" \
     -DLLVM_EXTERNAL_LIT="$PREFIX/bin/lit" \
@@ -70,10 +82,18 @@ cmake \
     "${SRC_DIR}"/compiler-rt
 
 # Build step
-make -j$CPU_COUNT VERBOSE=1 -k
+cmake --build .
 
 # Install step
-make install -j$CPU_COUNT
+cmake --install .
 
 # Clean up after build
 rm -rf "${PREFIX}/lib/libc++.tbd"
+
+if [[ "$target_platform" == "$build_platform" ]]; then
+  RESOURCE_DIR=$(${PREFIX}/bin/clang -print-resource-dir)
+  if [[ "${RESOURCE_DIR}" != "${INSTALL_PREFIX}" ]]; then
+    echo "Wrong install prefix (${INSTALL_PREFIX}). Should match ${RESOURCE_DIR}"
+    exit 1
+  fi
+fi
