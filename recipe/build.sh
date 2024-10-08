@@ -1,5 +1,6 @@
 #!/bin/bash
 set -ex
+cd ${SRC_DIR}
 
 if [[ "$target_platform" == osx-* ]]; then
     ls -al ${CONDA_BUILD_SYSROOT}
