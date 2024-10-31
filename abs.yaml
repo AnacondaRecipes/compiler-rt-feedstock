@@ -1,3 +1,6 @@
+noarch_upload:
+  - all
+
 # Don't skip-existing, it doesn't play well with multi-output feedstocks
 build_parameters:
   - "--suppress-variables"
