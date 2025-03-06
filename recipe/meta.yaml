@@ -1,4 +1,4 @@
-{% set version = "14.0.6" %}
+{% set version = "17.0.6" %}
 {% set prod_ver = '.'.join(version.split('.')[:3]) %}
 
 package:
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-  sha256: 8b3cfd7bc695bd6cea0f37f53f0981f34f87496e79e2529874fd03a2f9dd3a8a
+  sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
   patches:
     - patches/0001-no-code-sign.patch
     - patches/0002-compiler-rt-Make-7.0.0-compatible-with-10.9-SDK.patch
-    - patches/0003-set-cmake-paths.patch
-    - patches/0004-guard-use-of-FP_XSTATE_MAGIC1-based-on-glibc-version.patch
+    # - patches/0003-set-cmake-paths.patch
+    # - patches/0004-guard-use-of-FP_XSTATE_MAGIC1-based-on-glibc-version.patch
 
 build:
   number: 0
@@ -22,14 +22,15 @@ requirements:
   build:
     - cmake >=3.4.3
     - {{ compiler('cxx') }}
-    - python *
-    - make      # [unix]
-    - patch     # [unix]
-    - m2-patch  # [win]
+    - python #*
+    # - make      # [unix]
+    # - patch     # [unix]
+    # - m2-patch  # [win]
+    - libcxx {{ version }}  # [osx]
   host:
     - clangdev {{ version }}
     - llvmdev {{ version }}
-    - libcxx   # [osx]
+    - libcxx {{ version }}  # [osx]
 
 outputs:
   - name: compiler-rt_{{ target_platform }}
