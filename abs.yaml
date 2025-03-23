@@ -1,10 +1,7 @@
-noarch_upload:
-  - all
-
-# Don't skip-existing, it doesn't play well with multi-output feedstocks
 build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
 
-channels:
-  - https://staging.continuum.io/prefect/fs/clangdev-feedstock/pr4/b5c20c8
+upload_without_merge: True
+upload_to_staging_channel_in_pr: True
+channels: [ llvmdev17 ]
