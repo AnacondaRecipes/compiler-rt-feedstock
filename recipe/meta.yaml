@@ -28,7 +28,7 @@ requirements:
   host:
     - clangdev {{ version }}
     - llvmdev {{ version }}
-    - libcxx   # [osx]
+    - libcxx  {{ version }}   # [osx]
     - zlib {{ zlib }}
     - libxml2 {{ libxml2 }}
 
