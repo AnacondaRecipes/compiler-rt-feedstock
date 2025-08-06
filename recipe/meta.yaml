@@ -22,8 +22,6 @@ requirements:
     - {{ stdlib('c') }}
     - python *
     - ninja
-    - patch     # [not win]
-    - m2-patch  # [win]
     - llvmdev {{ version }}  # [build_platform != target_platform]
   host:
     - clangdev {{ version }}
