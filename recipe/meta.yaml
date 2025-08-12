@@ -35,7 +35,6 @@ outputs:
     build:
       ignore_run_exports_from:
         - {{ compiler('cxx') }}
-        - {{ stdlib('c') }}
       detect_binary_files_with_prefix: false  # [win]
     requirements:
       build:
