@@ -1,4 +1,4 @@
-{% set version = "17.0.6" %}
+{% set version = "19.1.7" %}
 {% set major_ver = version.split('.')[0] %}
 
 package:
@@ -6,24 +6,22 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/llvm/llvm-project/releases/download/llvmorg-{{ version.replace(".rc", "-rc") }}/llvm-project-{{ version.replace(".rc", "rc") }}.src.tar.xz
-  sha256: 58a8818c60e6627064f312dbf46c02d9949956558340938b71cf731ad8bc0813
+  url: https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-{{ version.replace(".rc", "-rc") }}.tar.gz
+  sha256: 59abea1c22e64933fad4de1671a61cdb934098793c7a31b333ff58dc41bff36c
   patches:
     - patches/0001-no-code-sign.patch
-    - patches/0002-compiler-rt-Make-7.0.0-compatible-with-10.9-SDK.patch
+    - patches/0002-Revert-Declare-_availability_version_check-as-weak_i.patch
 
 build:
-  number: 1
-  skip: True  # [linux and s390x]
+  number: 2
 
 requirements:
   build:
     - cmake >=3.4.3
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - python *
     - ninja
-    - patch     # [not win]
-    - m2-patch  # [win]
     - llvmdev {{ version }}  # [build_platform != target_platform]
   host:
     - clangdev {{ version }}
@@ -41,11 +39,12 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
       host:
       run:
         - clang {{ version }}
-        - clangxx {{ version }}
       run_constrained:
+        - clangxx {{ version }}
         - compiler-rt {{ version }}
     files:
       - lib/clang/{{ major_ver }}/lib   # [unix]
@@ -61,10 +60,10 @@ outputs:
     requirements:
       build:
         - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
       host:
       run:
         - clang {{ version }}
-        - clangxx {{ version }}
         - compiler-rt_{{ target_platform }} {{ version }}
     files:
       - lib/clang/{{ major_ver }}/share             # [unix]
