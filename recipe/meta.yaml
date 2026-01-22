@@ -54,7 +54,8 @@ outputs:
       commands:
         - echo {{ MACOSX_DEPLOYMENT_TARGET|default("10.9") }}
         - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/darwin/libclang_rt.osx.a                            # [osx]
-        - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1   # [win]
+        - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1   # [win and x86_64]
+        - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-aarch64.lib exit 1  # [win and arm64]
 
   - name: compiler-rt
     requirements:
@@ -80,7 +81,8 @@ outputs:
         # - sed "s/@MACOSX_DEPLOYMENT_TARGET@/{{ NEW_TARGET }}/g" test.c.in > test.c
         # - clang -mmacosx-version-min={{ MACOSX_DEPLOYMENT_TARGET }} test.c  # [osx]
         - test -f $PREFIX/lib/clang/{{ major_ver }}/include/sanitizer/asan_interface.h                      # [unix]
-        - if not exist %LIBRARY_LIB%\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1  # [win]
+        - if not exist %LIBRARY_LIB%\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1  # [win and x86_64]
+        - if not exist %LIBRARY_LIB%\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-aarch64.lib exit 1  # [win and arm64]
 
 about:
   home: https://llvm.org/
