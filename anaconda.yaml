@@ -1,0 +1,10 @@
+anaconda_config_version: 1
+upstream_sources:
+  - github:
+      identifier: llvm/llvm-project
+    packages:
+      - compiler-rt
+      - compiler-rt_linux-64
+      - compiler-rt_linux-aarch64
+      - compiler-rt_osx-arm64
+      - compiler-rt_win-64
