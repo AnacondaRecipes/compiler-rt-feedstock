@@ -17,11 +17,11 @@ build:
 
 requirements:
   build:
-    - cmake >=3.4.3
+    - cmake >=3.20.0
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
     - python *
-    - ninja
+    - ninja-base
     - llvmdev {{ version }}  # [build_platform != target_platform]
   host:
     - clangdev {{ version }}
@@ -57,6 +57,10 @@ outputs:
       commands:
         - echo {{ MACOSX_DEPLOYMENT_TARGET|default("10.9") }}
         - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/darwin/libclang_rt.osx.a                            # [osx]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/linux/libclang_rt.builtins-x86_64.a                 # [linux and x86_64]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/linux/libclang_rt.asan-x86_64.so                    # [linux and x86_64]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/linux/libclang_rt.builtins-aarch64.a                # [linux and aarch64]
+        - test -f $PREFIX/lib/clang/{{ major_ver }}/lib/linux/libclang_rt.asan-aarch64.so                   # [linux and aarch64]
         - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-x86_64.lib exit 1   # [win and x86_64]
         - if not exist %PREFIX%\lib\clang\{{ major_ver }}\lib\windows\clang_rt.builtins-aarch64.lib exit 1  # [win and arm64]
 
