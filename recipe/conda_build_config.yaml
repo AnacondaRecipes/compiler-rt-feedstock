@@ -1,19 +1,13 @@
-c_compiler:          # [osx]
+# Windows: keep consistent with llvmdev and clangdev
+c_compiler:
   - clang_bootstrap  # [osx]
-cxx_compiler:        # [osx]
+  - vs2022           # [win]
+cxx_compiler:
   - clang_bootstrap  # [osx]
+  - vs2022           # [win]
 
-# Stage 2: Self-hosted build with clang 22
-c_compiler_version:   # [osx]
-  - 22.1.2            # [osx]
-cxx_compiler_version:
-  - 22.1.2            # [osx]
-
-# Keep consistent with llvmdev and clangdev
-c_compiler:        # [win]
-  - vs2022         # [win]
-cxx_compiler:      # [win]
-  - vs2022         # [win]
-
-c_stdlib_version:  # [win]
-  - 2022.14        # [win]
+# macOS builds with the released clang_bootstrap (LLVM 22); release-first order of the LLVM 23 chain
+c_compiler_version:    # [osx]
+  - 22.1.2             # [osx]
+cxx_compiler_version:  # [osx]
+  - 22.1.2             # [osx]

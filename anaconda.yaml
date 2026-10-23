@@ -12,3 +12,4 @@ upstream_sources:
       - compiler-rt_linux-aarch64
       - compiler-rt_osx-arm64
       - compiler-rt_win-64
+      - compiler-rt_win-arm64
