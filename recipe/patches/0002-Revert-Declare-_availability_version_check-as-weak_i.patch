@@ -1,4 +1,4 @@
-From 0022c4e9aa397cb9c5530cf5875d728bbf558bc9 Mon Sep 17 00:00:00 2001
+From 2b96b724472baaaadf65a89b104c5a01dec39bab Mon Sep 17 00:00:00 2001
 From: "H. Vetinari" <h.vetinari@gmx.com>
 Date: Mon, 2 Sep 2024 14:30:13 +1100
 Subject: [PATCH 2/2] Revert "Declare _availability_version_check as
@@ -10,7 +10,7 @@ This reverts commit b653a2823fe4b4c9c6d85cfe119f31d8e70c2fa0.
  1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/compiler-rt/lib/builtins/os_version_check.c b/compiler-rt/lib/builtins/os_version_check.c
-index b10f23a81a9c..80f19cc8803a 100644
+index b10f23a..80f19cc 100644
 --- a/compiler-rt/lib/builtins/os_version_check.c
 +++ b/compiler-rt/lib/builtins/os_version_check.c
 @@ -87,10 +87,6 @@ typedef Boolean (*CFStringGetCStringFuncTy)(CFStringRef, char *, CFIndex,
@@ -35,3 +35,6 @@ index b10f23a81a9c..80f19cc8803a 100644
  
    if (AvailabilityVersionCheck && !LoadPlist) {
      // New API is supported and we're not being asked to load the plist,
+-- 
+2.50.1 (Apple Git-155)
+

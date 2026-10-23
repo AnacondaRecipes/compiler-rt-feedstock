@@ -1,4 +1,4 @@
-From a1c3b716141d42dcc56fcc688509f4b62d4c9e05 Mon Sep 17 00:00:00 2001
+From b137b3eb9f648c2b0025a6904f5333e3f42e480b Mon Sep 17 00:00:00 2001
 From: Isuru Fernando <isuruf@gmail.com>
 Date: Mon, 22 Apr 2019 02:00:30 -0500
 Subject: [PATCH 1/2] no code sign
@@ -8,12 +8,12 @@ Subject: [PATCH 1/2] no code sign
  1 file changed, 32 deletions(-)
 
 diff --git a/compiler-rt/cmake/Modules/AddCompilerRT.cmake b/compiler-rt/cmake/Modules/AddCompilerRT.cmake
-index c3e734f72392..c2666bf3adcf 100644
+index 2ae73df..a20b05b 100644
 --- a/compiler-rt/cmake/Modules/AddCompilerRT.cmake
 +++ b/compiler-rt/cmake/Modules/AddCompilerRT.cmake
-@@ -389,38 +389,6 @@ function(add_compiler_rt_runtime name type)
-         set_target_properties(${libname} PROPERTIES IMPORT_PREFIX "")
-         set_target_properties(${libname} PROPERTIES IMPORT_SUFFIX ".lib")
+@@ -405,38 +405,6 @@ function(add_compiler_rt_runtime name type)
+           install(FILES $<TARGET_PDB_FILE:${libname}> DESTINATION "${install_dir_${libname}}" COMPONENT ${COMPONENT_OPTION} OPTIONAL)
+         endif()
        endif()
 -      find_program(CODESIGN codesign)
 -      if (APPLE AND NOT CMAKE_LINKER MATCHES ".*lld.*" AND CODESIGN)
@@ -50,3 +50,6 @@ index c3e734f72392..c2666bf3adcf 100644
      endif()
  
      set(parent_target_arg)
+-- 
+2.50.1 (Apple Git-155)
+
