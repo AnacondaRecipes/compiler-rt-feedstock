@@ -1,4 +1,0 @@
-# TEMPORARY: clang_bootstrap 23.1.4 from clang-compiler-activation#29's PR graph for PR CI only.
-# REMOVE before merge (merge only after clang-compiler-activation 23.1.4 is on pkgs/main).
-channels:
-  - https://package-build.internal.anaconda.com/pkg-orchestrator/v1/channels/graphs/4a9ea5f3-3e92-4125-ba0c-2451311fd67c
